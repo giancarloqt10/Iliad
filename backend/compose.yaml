@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  db:
+    image: mariadb:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root  # Password di root per lo sviluppo
+      MYSQL_DATABASE: order_management
+      MYSQL_USER: iliad_app
+      MYSQL_PASSWORD: iliad
+    ports:
+      - "3307:3306"  # la porta 3307 in locale
+    volumes:
+      - db_data:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password  # Forza l'autenticazione nativa
+
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile.php
+    volumes:
+      - .:/var/www/html
+    working_dir: /var/www/html
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: mysql://iliad_app:iliad@db:3306/order_management
+
+  app:
+    image: nginx:alpine
+    volumes:
+      - .:/var/www/html:cached
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    ports:
+      - "8000:80"
+    depends_on:
+      - php
+
+volumes:
+  db_data:
