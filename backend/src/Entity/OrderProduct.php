@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\OrderProductRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: OrderProductRepository::class)]
 class OrderProduct
@@ -19,9 +20,11 @@ class OrderProduct
 
     #[ORM\ManyToOne(inversedBy: 'orderProducts')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(["order_details"])]
     private ?Product $product = null;
 
     #[ORM\Column]
+    #[Groups(["order_details"])]
     private ?int $quantity = null;
 
     public function getId(): ?int

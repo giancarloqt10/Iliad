@@ -25,61 +25,87 @@ class ProductController extends AbstractController
     #[Route('/', name: 'app_product_index', methods: ['GET'])]
     public function index(Request $request): JsonResponse
     {
-        $name = $request->query->get('name');
-        $description = $request->query->get('description');
+        try {
+            $name = $request->query->get('name');
+            $description = $request->query->get('description');
 
-        $products = $this->productRepository->findByFilters($name, $description);
+            $products = $this->productRepository->findByFilters($name, $description);
 
-        return $this->json($products, 200, [], ['groups' => 'product']);
+            return $this->json($products, 200, [], ['groups' => 'product']);
+        } catch (\Exception $e) {
+            return $this->json(['error' => 'An error occurred while fetching products'], 500);
+        }
     }
 
     #[Route('/new', name: 'app_product_new', methods: ['POST'])]
     public function new(Request $request): JsonResponse
     {
-        $product = $this->serializer->deserialize($request->getContent(), Product::class, 'json');
+        try {
+            $product = $this->serializer->deserialize($request->getContent(), Product::class, 'json');
 
-        // Validazione
-        $errors = $this->validator->validate($product);
-        if (count($errors) > 0) {
-            return $this->json(['errors' => $errors], 422);
+            // Validazione
+            $errors = $this->validator->validate($product);
+            if (count($errors) > 0) {
+                return $this->json(['errors' => $errors], 422);
+            }
+
+            $this->entityManager->persist($product);
+            $this->entityManager->flush();
+
+            return $this->json($product, 201, [], ['groups' => 'product']);
+        } catch (\Exception $e) {
+            return $this->json(['error' => 'An error occurred while creating the product'], 500);
         }
-
-        $this->entityManager->persist($product);
-        $this->entityManager->flush();
-
-        return $this->json($product, 201, [], ['groups' => 'product']);
     }
 
     #[Route('/{id}', name: 'app_product_show', methods: ['GET'])]
     public function show(Product $product): JsonResponse
     {
-        return $this->json($product, 200, [], ['groups' => 'product']);
+        try {
+            return $this->json($product, 200, [], ['groups' => 'product']);
+        } catch (\Doctrine\ORM\EntityNotFoundException $e) {
+            return $this->json(['error' => 'Product not found'], 404);
+        } catch (\Exception $e) {
+            return $this->json(['error' => 'An error occurred'], 500);
+        }
     }
 
     #[Route('/{id}/edit', name: 'app_product_edit', methods: ['PUT', 'PATCH'])]
     public function edit(Request $request, Product $product): JsonResponse
     {
-        $product = $this->serializer->deserialize($request->getContent(), Product::class, 'json', [
-            'object_to_populate' => $product,
-        ]);
+        try {
+            $product = $this->serializer->deserialize($request->getContent(), Product::class, 'json', [
+                'object_to_populate' => $product,
+            ]);
 
-        // Validazione
-        $errors = $this->validator->validate($product);
-        if (count($errors) > 0) {
-            return $this->json(['errors' => $errors], 422);
+            // Validazione
+            $errors = $this->validator->validate($product);
+            if (count($errors) > 0) {
+                return $this->json(['errors' => $errors], 422);
+            }
+
+            $this->entityManager->flush();
+
+            return $this->json($product, 200, [], ['groups' => 'product']);
+        } catch (\Doctrine\ORM\EntityNotFoundException $e) {
+            return $this->json(['error' => 'Product not found'], 404);
+        } catch (\Exception $e) {
+            return $this->json(['error' => 'An error occurred while updating the product'], 500);
         }
-
-        $this->entityManager->flush();
-
-        return $this->json($product, 200, [], ['groups' => 'product']);
     }
 
     #[Route('/{id}', name: 'app_product_delete', methods: ['DELETE'])]
     public function delete(Product $product): JsonResponse
     {
-        $this->entityManager->remove($product);
-        $this->entityManager->flush();
+        try {
+            $this->entityManager->remove($product);
+            $this->entityManager->flush();
 
-        return $this->json(['message' => 'Product deleted'], 204);
+            return $this->json(['message' => 'Product deleted'], 204);
+        } catch (\Doctrine\ORM\EntityNotFoundException $e) {
+            return $this->json(['error' => 'Product not found'], 404);
+        } catch (\Exception $e) {
+            return $this->json(['error' => 'An error occurred while deleting the product'], 500);
+        }
     }
 }

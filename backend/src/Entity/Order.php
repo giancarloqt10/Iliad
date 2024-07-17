@@ -8,6 +8,8 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Context;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ORM\Table(name: '`order`')]
@@ -25,6 +27,7 @@ class Order
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Groups(["order"])]
+    #[Context([DateTimeNormalizer::FORMAT_KEY => 'd-m-Y H:i:s'])] 
     private ?\DateTimeInterface $orderDate = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
