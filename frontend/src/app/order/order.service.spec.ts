@@ -54,8 +54,14 @@ describe('OrderService', () => {
   });
 
   it('should create a new order', () => {
-    const newOrder: Order = { customerName: 'Giancarlo Quin', orderDate: '17-07-2024 09:00:00', description: 'Nuovo ordine', orderProducts: [] };
-    const mockOrder: Order = { id: 3, ...newOrder }; // Simula l'ordine creato con un nuovo ID
+    const newOrder: Order = {id: 0, customerName: 'Giancarlo Quin', orderDate: '17-07-2024 09:00:00', description: 'Nuovo ordine', orderProducts: [] };
+    const mockOrder: Order = {
+      id: 3,
+      customerName: newOrder.customerName,
+      orderDate: newOrder.orderDate,
+      description: newOrder.description,
+      orderProducts: newOrder.orderProducts
+  };
 
     service.createOrder(newOrder).subscribe(order => {
       expect(order).toEqual(mockOrder);

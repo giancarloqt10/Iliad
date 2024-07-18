@@ -1,1 +1,33 @@
-<p>product-form works!</p>
+<h2>{{ isEditing ? 'Modifica Prodotto' : 'Nuovo Prodotto' }}</h2>
+
+<form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+  <mat-form-field appearance="outline">
+    <mat-label>Nome</mat-label>
+    <input matInput formControlName="name" required>
+    <mat-error *ngIf="productForm.get('name')?.hasError('required')">
+      Nome prodotto obbligatorio
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Prezzo</mat-label>
+    <input matInput type="number" formControlName="price" min="0" required>
+    <mat-error *ngIf="productForm.get('price')?.hasError('required')">
+      Prezzo obbligatorio
+    </mat-error>
+    <mat-error *ngIf="productForm.get('price')?.hasError('min')">
+      Il prezzo deve essere almeno 0
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Descrizione</mat-label>
+    <textarea matInput formControlName="description"></textarea>
+  </mat-error>
+  </mat-form-field>
+
+  <button mat-raised-button color="primary" type="submit" [disabled]="productForm.invalid">
+    {{ isEditing ? 'Salva Modifiche' : 'Crea Prodotto' }}
+  </button>
+  <button mat-raised-button type="button" (click)="goBack()">Annulla</button>
+</form>

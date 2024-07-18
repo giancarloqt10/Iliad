@@ -53,8 +53,7 @@ describe('ProductService', () => {
 
   it('should create a new product', () => {
     const newProduct: Product = { id: 0, name: 'Product C', price: 24.99, description: 'Description C' };
-    const mockProduct: Product = { id: 3, ...newProduct }; // Simula il prodotto creato con un nuovo ID
-
+    const mockProduct: Product = { id: 3, name: newProduct.name, price: newProduct.price, description: newProduct.description };
     service.createProduct(newProduct).subscribe(product => {
       expect(product).toEqual(mockProduct);
     });
