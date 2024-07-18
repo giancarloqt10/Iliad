@@ -24,6 +24,8 @@
   </mat-form-field>
 </div>
 
+<button mat-raised-button color="primary" [routerLink]="['/orders/new']">Aggiungi Ordine</button>
+
 <table mat-table [dataSource]="orders" class="mat-elevation-z8">
   <ng-container matColumnDef="actions">
     <th mat-header-cell *matHeaderCellDef> Azioni </th>

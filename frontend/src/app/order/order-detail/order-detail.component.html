@@ -6,6 +6,9 @@
 
 <div *ngIf="order && !loading && !error">
   <h2>Dettagli Ordine</h2>
+  <button mat-raised-button color="primary" (click)="editOrder(order.id)"> 
+    <mat-icon>edit</mat-icon> Modifica
+  </button>
   <mat-list role="list">
     <mat-list-item role="listitem">ID: {{ order.id }}</mat-list-item>
     <mat-list-item role="listitem">Nome Cliente: {{ order.customerName }}</mat-list-item>
@@ -30,4 +33,3 @@
     <button mat-raised-button (click)="goBack()">Indietro</button>
   </div>
 </div>
-

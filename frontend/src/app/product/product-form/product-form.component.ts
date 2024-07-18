@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService } from '../product.service';
 import { Product } from '../product';
@@ -7,16 +7,17 @@ import { Location } from '@angular/common';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ReactiveFormsModule } from '@angular/forms';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { catchError, of } from 'rxjs';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-product-form',
   standalone: true,
-  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatSnackBarModule],
+  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatSnackBarModule, NgIf],
   templateUrl: './product-form.component.html',
-  styleUrl: './product-form.component.css'
+  styleUrl: './product-form.component.scss'
 })
 export class ProductFormComponent implements OnInit {
   productForm: FormGroup;
@@ -43,9 +44,18 @@ export class ProductFormComponent implements OnInit {
     this.isEditing = !!this.productId;
 
     if (this.isEditing) {
-      this.productService.getProduct(this.productId).subscribe({
-        next: (product) => this.productForm.patchValue(product),
-        error: (error) => console.error('Errore nel recupero del prodotto:', error)
+      this.productService.getProduct(this.productId).pipe(
+        catchError(error => {
+          console.error('Errore nel recupero del prodotto:', error);
+          this.showError('Errore nel recupero dei dettagli del prodotto.');
+          return of(undefined); // Gestisci l'errore restituendo un observable vuoto
+        })
+      ).subscribe(product => {
+        if (product) {
+          this.productForm.patchValue(product);
+        } else {
+          this.goBack(); // Torna indietro se il prodotto non viene trovato
+        }
       });
     }
   }
@@ -82,5 +92,9 @@ export class ProductFormComponent implements OnInit {
 
   goBack(): void {
     this.location.back();
+  }
+
+  showError(message: string) {
+    this._snackBar.open(message, 'Chiudi', { duration: 5000 });
   }
 }

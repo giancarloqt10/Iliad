@@ -7,13 +7,14 @@ import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { NgIf, NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-order-detail',
   standalone: true,
-  imports: [MatListModule, MatButtonModule, MatIconModule],
+  imports: [MatListModule, MatButtonModule, MatIconModule, NgIf, NgFor],
   templateUrl: './order-detail.component.html',
-  styleUrl: './order-detail.component.css'
+  styleUrl: './order-detail.component.scss'
 })
 export class OrderDetailComponent implements OnInit {
   order: Order | undefined;

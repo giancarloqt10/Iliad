@@ -1,63 +1,66 @@
 <h2>{{ isEditing ? 'Modifica Ordine' : 'Nuovo Ordine' }}</h2>
 
 <form [formGroup]="orderForm" (ngSubmit)="onSubmit()">
-  <mat-form-field appearance="outline">
-    <mat-label>Nome Cliente</mat-label>
-    <input matInput formControlName="customerName" required>
-    <mat-error *ngIf="orderForm.get('customerName')?.hasError('required')">
-      Nome cliente obbligatorio
-    </mat-error>
-  </mat-form-field>
+    <mat-form-field appearance="outline">
+        <mat-label>Nome Cliente</mat-label>
+        <input matInput formControlName="customerName" required>
+        <mat-error *ngIf="orderForm.get('customerName')?.hasError('required')">
+            Nome cliente obbligatorio
+        </mat-error>
+    </mat-form-field>
 
-  <mat-form-field appearance="outline">
-    <mat-label>Data Ordine</mat-label>
-    <input matInput [matDatepicker]="orderDatePicker" formControlName="orderDate" required>
-    <mat-datepicker-toggle matSuffix [for]="orderDatePicker"></mat-datepicker-toggle>
-    <mat-datepicker #orderDatePicker></mat-datepicker>
-    <mat-error *ngIf="orderForm.get('orderDate')?.hasError('required')">
-      Data ordine obbligatoria
-    </mat-error>
-  </mat-form-field>
+    <mat-form-field appearance="outline">
+        <mat-label>Data Ordine</mat-label>
+        <input matInput [matDatepicker]="orderDatePicker" formControlName="orderDate" required>
+        <mat-datepicker-toggle matSuffix [for]="orderDatePicker"></mat-datepicker-toggle>
+        <mat-datepicker #orderDatePicker></mat-datepicker>
+        <mat-error *ngIf="orderForm.get('orderDate')?.hasError('required')">
+            Data ordine obbligatoria
+        </mat-error>
+    </mat-form-field>
 
-  <mat-form-field appearance="outline">
-    <mat-label>Descrizione</mat-label>
-    <textarea matInput formControlName="description"></textarea>
-  </mat-form-field>
-  
-  <h3>Prodotti:</h3>
-  <div formArrayName="products">
-    <div *ngFor="let productControl of products.controls; let i = index" [formGroupName]="i">
-      <mat-form-field appearance="outline">
-        <mat-label>Prodotto</mat-label>
-        <input type="text" matInput formControlName="name" [matAutocomplete]="auto" (keyup)="filterProducts($event.target.value)">
-        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayProduct">
-          <mat-option *ngFor="let product of filteredProducts | async" [value]="product">
-            {{ product.name }}
-          </mat-option>
-        </mat-autocomplete>
-        <mat-error *ngIf="productControl.get('name')?.hasError('required')">
-          Prodotto obbligatorio
-        </mat-error>
-      </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>Quantità</mat-label>
-        <input matInput type="number" formControlName="quantity" min="1" required>
-        <mat-error *ngIf="productControl.get('quantity')?.hasError('required')">
-          Quantità obbligatoria
-        </mat-error>
-        <mat-error *ngIf="productControl.get('quantity')?.hasError('min')">
-          La quantità deve essere almeno 1
-        </mat-error>
-      </mat-form-field>
-      <button mat-icon-button color="warn" (click)="removeProduct(i)">
-        <mat-icon>delete</mat-icon>
-      </button>
+    <mat-form-field appearance="outline">
+        <mat-label>Descrizione</mat-label>
+        <textarea matInput formControlName="description"></textarea>
+    </mat-form-field>
+
+    <h3>Prodotti:</h3>
+    <div formArrayName="products">
+        <div *ngFor="let productControl of products.controls; let i = index" [formGroupName]="i">
+            <mat-form-field appearance="outline">
+                <mat-label>Prodotto</mat-label>
+                <input type="text" matInput #productInput formControlName="name" [matAutocomplete]="auto" (keyup)="filterProducts(productInput.value)">
+                <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayProduct"
+                    (optionSelected)="onProductSelected($event, i)">
+                    <mat-option *ngFor="let product of filteredProducts | async" [value]="product">
+                        {{ product.name }}
+                    </mat-option>
+                </mat-autocomplete>
+                <mat-error *ngIf="productControl.get('name')?.hasError('required')">
+                    Prodotto obbligatorio
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Quantit\u00e0</mat-label>
+                <input matInput type="number" formControlName="quantity" min="1" required>
+                <mat-error *ngIf="productControl.get('quantity')?.hasError('required')">
+                    Quantit\u00e0 obbligatoria
+                </mat-error>
+                <mat-error *ngIf="productControl.get('quantity')?.hasError('min')">
+                    La quantit\u00e0 deve essere almeno 1
+                </mat-error>
+            </mat-form-field>
+
+            <button mat-icon-button color="warn" (click)="removeProduct(i)">
+                <mat-icon>delete</mat-icon>
+            </button>
+        </div>
+        <button mat-raised-button color="primary" type="button" (click)="addProduct()">Aggiungi Prodotto</button>
     </div>
-    <button mat-raised-button color="primary" type="button" (click)="addProduct()">Aggiungi Prodotto</button>
-  </div>
 
-  <button mat-raised-button color="primary" type="submit" [disabled]="orderForm.invalid">
-    {{ isEditing ? 'Salva Modifiche' : 'Crea Ordine' }}
-  </button>
-  <button mat-raised-button type="button" (click)="goBack()">Annulla</button>
+    <button mat-raised-button color="primary" type="submit" [disabled]="orderForm.invalid">
+        {{ isEditing ? 'Salva Modifiche' : 'Crea Ordine' }}
+    </button>
+    <button mat-raised-button type="button" (click)="goBack()">Annulla</button>
 </form>

@@ -11,11 +11,12 @@ import { startWith, debounceTime, distinctUntilChanged, switchMap, catchError } 
 import { of, throwError } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-order-list',
   standalone: true,
-  imports: [MatTableModule, MatFormFieldModule, MatInputModule, MatDatepickerModule, MatNativeDateModule, ReactiveFormsModule],
+  imports: [MatTableModule, MatFormFieldModule, MatInputModule, MatDatepickerModule, MatNativeDateModule, ReactiveFormsModule, RouterModule],
   templateUrl: './order-list.component.html',
   styleUrl: './order-list.component.scss'
 })

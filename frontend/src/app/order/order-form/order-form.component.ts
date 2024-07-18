@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { OrderService } from '../order.service';
 import { ProductService } from '../../product/product.service';
@@ -10,11 +10,33 @@ import { Observable, of } from 'rxjs';
 import { map, startWith, catchError } from 'rxjs/operators';
 import { Location } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-order-form',
+  standalone: true,
+  imports: [
+    ReactiveFormsModule, 
+    MatAutocompleteModule, 
+    MatFormFieldModule, 
+    MatInputModule, 
+    MatDatepickerModule, 
+    MatNativeDateModule,
+    MatIconModule,
+    MatButtonModule,
+    MatSnackBarModule,
+    NgIf
+  ],
   templateUrl: './order-form.component.html',
-  styleUrls: ['./order-form.component.css']
+  styleUrl: './order-form.component.scss' 
 })
 export class OrderFormComponent implements OnInit {
   orderForm!: FormGroup;
@@ -104,11 +126,13 @@ export class OrderFormComponent implements OnInit {
     this.products.removeAt(index);
   }
 
-  filterProducts(value: string): void {
-    const filterValue = value.toLowerCase();
-    this.filteredProducts = this.productService.getProducts(filterValue).pipe(
-      startWith(this.allProducts.filter(product => product.name.toLowerCase().includes(filterValue)))
-    );
+  filterProducts(event: any): void {
+    if (event.target instanceof HTMLInputElement) {
+      const filterValue = event.target.value.toLowerCase();
+      this.filteredProducts = this.productService.getProducts(filterValue).pipe(
+        startWith(this.allProducts.filter(product => product.name.toLowerCase().includes(filterValue)))
+      );
+    }
   }
 
   displayProduct(product: Product): string {

@@ -16,7 +16,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
-import { OrderProduct } from '../order-product'; // Importa l'interfaccia OrderProduct
+import { OrderProduct } from '../order-product';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('OrderFormComponent', () => {
   let component: OrderFormComponent;
